@@ -1,0 +1,22 @@
+{
+  "previous_size" : 2269,
+  "current_size"  : 1601,
+  "future_size"   : 2269,
+
+  "dilation"      : [1, 2, 4, 8, 16, 32, 64, 128, 256, 512],
+  "batch_size"    : 1,
+  "epochs"        : 100,
+  "learning_rate" : 0.001,
+  "relu_alpha"    : 0.0,
+  "default_float" : "float32",
+
+  "load_check_point_name" : "",
+  "save_check_point_name" : "test",
+
+  "training_source_file"  : "./dataset/metro/noise20_book_51min.wav",
+  "training_target_file"  : "./dataset/metro/original_book_51min.wav",
+
+  "test_source_file"  : ".wav",
+  "test_result_file"  : "result.wav",
+  "test_noise_file"   : "noise.wav"
+}
