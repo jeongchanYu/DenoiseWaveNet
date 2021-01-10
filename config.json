@@ -17,7 +17,6 @@
   "training_source_file"  : "./dataset/pink/original1_pink.wav",
   "training_target_file"  : "./dataset/pink/original1.wav",
 
-  "test_source_file"  : ".wav",
-  "test_result_file"  : "result.wav",
-  "test_noise_file"   : "noise.wav"
+  "test_source_file"  : "./dataset/original1_pink.wav",
+  "test_target_file"  : "./dataset/original1.wav"
 }

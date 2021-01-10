@@ -38,7 +38,7 @@ size_of_source = source_signal.size
 
 # source & target file incorrect
 if size_of_source != size_of_target:
-    raise Exception("ERROR: Input output size mismatch")
+    raise Exception("ERROR: Input, output size mismatch")
 if size_of_source < current_size:
     raise Exception("ERROR: Input file length is too small")
 if shift_size <= 0:
@@ -66,7 +66,7 @@ model = wavenet.DenoiseWaveNet(config['dilation'], config['relu_alpha'], config[
 
 # load model
 if config['load_check_point_name'] != "":
-    model.load_weights('{}/checkpoint/{}/checkpoint.ckpt'.format(cf.load_path(), config['load_check_point_name']))
+    model.load_weights('{}/checkpoint/{}/data.ckpt'.format(cf.load_path(), config['load_check_point_name']))
 
 loss_object = tf.keras.losses.MeanAbsoluteError()
 optimizer = tf.keras.optimizers.Adam(learning_rate=config['learning_rate'])

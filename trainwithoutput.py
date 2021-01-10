@@ -36,9 +36,10 @@ source_signal = np.array(source_signal)
 size_of_target = target_signal.size
 size_of_source = source_signal.size
 
+
 # source & target file incorrect
 if size_of_source != size_of_target:
-    raise Exception("ERROR: Input output size mismatch")
+    raise Exception("ERROR: Train input, output size mismatch")
 if size_of_source < current_size:
     raise Exception("ERROR: Input file length is too small")
 if shift_size <= 0:
@@ -46,7 +47,6 @@ if shift_size <= 0:
 
 # padding
 mod = (shift_size - (size_of_source % shift_size)) % shift_size
-mod_current_size = (current_size - (size_of_source % current_size)) % current_size
 target_signal_padded = np.concatenate([np.zeros(previous_size), target_signal, np.zeros(future_size+mod)]).astype('float32')
 source_signal_padded = np.concatenate([np.zeros(previous_size), source_signal, np.zeros(future_size+mod)]).astype('float32')
 if shift_size < current_size:
@@ -62,13 +62,48 @@ for i in range(number_of_frames):
     y_signal.append(target_signal_padded[i*shift_size:(i*shift_size) + receptive_size])
 train_dataset = tf.data.Dataset.from_tensor_slices((x_signal, y_signal)).batch(batch_size)
 
+# make test data
+if config['training_source_file'] != config['test_source_file']:
+    test_source_signal, test_source_sample_rate = wav.read_wav(config['test_source_file'])
+    if config['test_target_file'] == '':
+        test_target_file_exist = False
+        test_target_signal = test_source_signal
+        print("ISSUE: Test target file is not exist")
+    else:
+        test_target_file_exist = True
+        test_target_signal, test_target_sample_rate = wav.read_wav(config['test_target_file'])
+
+    test_target_signal = np.array(test_target_signal)
+    test_source_signal = np.array(test_source_signal)
+    test_size_of_source = test_source_signal.size
+    test_size_of_target = test_target_signal.size
+
+    if test_size_of_source != test_size_of_target:
+        raise Exception("ERROR: Test input, output size mismatch")
+    if test_source_sample_rate != source_sample_rate:
+        raise Exception("ERROR: Train, test sample rate mismatch")
+
+    test_mod = (current_size - (test_size_of_source % current_size)) % current_size
+    test_target_signal_padded = np.concatenate([np.zeros(previous_size), test_target_signal, np.zeros(future_size + test_mod)]).astype('float32')
+    test_source_signal_padded = np.concatenate([np.zeros(previous_size), test_source_signal, np.zeros(future_size + test_mod)]).astype('float32')
+else:
+    test_target_file_exist = True
+    test_target_signal = target_signal
+    test_source_signal = source_signal
+    test_target_sample_rate = target_sample_rate
+    test_source_sample_rate = source_sample_rate
+    test_size_of_target = size_of_target
+    test_size_of_source = size_of_source
+    test_mod = (current_size - (size_of_source % current_size)) % current_size
+    test_target_signal_padded = target_signal_padded
+    test_source_signal_padded = source_signal_padded
 
 # make model
 model = wavenet.DenoiseWaveNet(config['dilation'], config['relu_alpha'], config['default_float'])
 
 # load model
 if config['load_check_point_name'] != "":
-    model.load_weights('{}/checkpoint/{}/checkpoint.ckpt'.format(cf.load_path(), config['load_check_point_name']))
+    model.load_weights('{}/checkpoint/{}/data.ckpt'.format(cf.load_path(), config['load_check_point_name']))
 
 loss_object = tf.keras.losses.MeanAbsoluteError()
 optimizer = tf.keras.optimizers.Adam(learning_rate=config['learning_rate'])
@@ -89,11 +124,14 @@ def train_step(x, y):
 @tf.function
 def test_step(x, y):
     y_pred = model(x)
-    loss = loss_object(y, y_pred, 2)
+    if test_target_file_exist:
+        loss = loss_object(y, y_pred, 2)
+    else:
+        loss = loss_object(y_pred, y_pred, 2)
     test_loss(loss)
     return y_pred
 
-# train run
+# train and test run
 for epoch in range(epochs):
     i = 0
     start = time.time()
@@ -108,18 +146,18 @@ for epoch in range(epochs):
     i = 0
     sample = 0
     start = time.time()
-    while sample < size_of_source:
-        print("\rTest : epoch {}/{}, frame {}/{}".format(epoch + 1, epochs, i + 1, math.ceil(size_of_source/current_size)), end='')
-        y_pred = test_step(source_signal_padded[sample:sample+previous_size+current_size+future_size], target_signal_padded[sample:sample+previous_size+current_size+future_size])
+    while sample < test_size_of_source:
+        print("\rTest : epoch {}/{}, frame {}/{}".format(epoch + 1, epochs, i + 1, math.ceil(test_size_of_source/current_size)), end='')
+        y_pred = test_step(test_source_signal_padded[sample:sample+previous_size+current_size+future_size],
+                           test_target_signal_padded[sample:sample+previous_size+current_size+future_size])
         y_pred = np.array(y_pred, dtype='float64')
-        b_pred = np.array(source_signal_padded[sample:sample+previous_size+current_size+future_size], dtype='float64')-y_pred
+        b_pred = np.array(test_source_signal_padded[sample:sample+previous_size+current_size+future_size], dtype='float64')-y_pred
         y_pred = y_pred.tolist()
         b_pred = b_pred.tolist()
         result.extend(y_pred[previous_size:previous_size+current_size])
         result_noise.extend(b_pred[previous_size:previous_size+current_size])
         sample += current_size
         i += 1
-    mod = i-size_of_source
     print(" | loss : {}".format(test_loss.result()), " | Processing time :", datetime.timedelta(seconds=time.time() - start))
 
     # save checkpoint
@@ -127,6 +165,6 @@ for epoch in range(epochs):
     model.save_weights('{}/checkpoint/{}_{}/data.ckpt'.format(cf.load_path(), config['save_check_point_name'], epoch+1))
 
     # save output
-    cf.createFolder("{}/train_result".format(cf.load_path(), config['save_check_point_name'], epoch + 1))
-    wav.write_wav(result[:len(result)-mod], "{}/train_result/result{}.wav".format(cf.load_path(), epoch + 1),source_sample_rate)
-    wav.write_wav(result_noise[:len(result_noise)-mod], "{}/train_result/result_noise{}.wav".format(cf.load_path(), epoch + 1), source_sample_rate)
+    cf.createFolder("{}/train_result".format(cf.load_path()))
+    wav.write_wav(result[:len(result)-test_mod], "{}/train_result/result{}.wav".format(cf.load_path(), epoch + 1), test_source_sample_rate)
+    wav.write_wav(result_noise[:len(result_noise)-test_mod], "{}/train_result/result_noise{}.wav".format(cf.load_path(), epoch + 1), test_source_sample_rate)
