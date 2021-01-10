@@ -14,9 +14,9 @@
   "load_check_point_name" : "",
   "save_check_point_name" : "test",
 
-  "training_source_file"  : "./dataset/pink/original1_pink.wav",
-  "training_target_file"  : "./dataset/pink/original1.wav",
+  "training_source_file"  : "./dataset/metro/51min/noise20_book_51min.wav",
+  "training_target_file"  : "./dataset/metro/51min/original_book_51min.wav",
 
-  "test_source_file"  : "./dataset/original1_pink.wav",
-  "test_target_file"  : "./dataset/original1.wav"
+  "test_source_file"  : "./dataset/metro/36min/noise20_book_36min.wav",
+  "test_target_file"  : "./dataset/metro/36min/original_book_36min.wav"
 }

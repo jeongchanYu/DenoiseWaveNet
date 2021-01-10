@@ -19,9 +19,9 @@ class DenoiseWaveNet(Model):
 
     def call(self, x):
         temp_x = x
-        if len(temp_x.shape)==2:
+        if len(temp_x.shape) == 2:
             temp_x = tf.reshape(temp_x, [temp_x.shape[0], temp_x.shape[1], -1])
-        elif len(temp_x.shape)==1:
+        elif len(temp_x.shape) == 1:
             temp_x = tf.reshape(temp_x, [1, temp_x.shape[0], 1])
 
         temp_x = self.conv_input(temp_x)
