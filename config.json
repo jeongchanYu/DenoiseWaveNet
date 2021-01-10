@@ -2,7 +2,7 @@
   "previous_size" : 2269,
   "current_size"  : 1601,
   "future_size"   : 2269,
-  "shift_size"    : 1601,
+  "shift_size"    : 10,
 
   "dilation"      : [1, 2, 4, 8, 16, 32, 64, 128, 256, 512],
   "batch_size"    : 1,
@@ -12,7 +12,7 @@
   "default_float" : "float32",
 
   "load_check_point_name" : "",
-  "save_check_point_name" : "test",
+  "save_check_point_name" : "metro51",
 
   "training_source_file"  : "./dataset/metro/51min/noise20_book_51min.wav",
   "training_target_file"  : "./dataset/metro/51min/original_book_51min.wav",
