@@ -7,7 +7,7 @@ class DenoiseWaveNet(Model):
         super(DenoiseWaveNet, self).__init__()
 
         tf.keras.backend.set_floatx(default_float)
-        self.relu = tf.keras.activations.relu(alpha=relu_alpha)
+        self.relu = lambda x: tf.keras.activations.relu(x, alpha=relu_alpha)
         self.dilation = dilation
 
         self.conv_input = Conv1D(128, 1)
@@ -18,14 +18,17 @@ class DenoiseWaveNet(Model):
         self.conv_proj = Conv1D(1, 1, activation='tanh')
 
     def call(self, x):
-        temp_x = x.copy()
-        temp_x = tf.reshape(temp_x, [temp_x.shape[0], temp_x.shape[1], -1])
+        temp_x = x
+        if len(temp_x.shape)==2:
+            temp_x = tf.reshape(temp_x, [temp_x.shape[0], temp_x.shape[1], -1])
+        elif len(temp_x.shape)==1:
+            temp_x = tf.reshape(temp_x, [1, temp_x.shape[0], 1])
 
         temp_x = self.conv_input(temp_x)
         for i in range(len(self.dilation)):
             dilated_x = self.conv_gated_in[i](temp_x)
             dilated_x = tf.keras.activations.sigmoid(dilated_x) * tf.keras.activations.tanh(dilated_x)
-            dilated_x = self.conv_gated_out(dilated_x)
+            dilated_x = self.conv_gated_out[i](dilated_x)
             temp_x += dilated_x
             if i == 0:
                 skip_output = dilated_x
