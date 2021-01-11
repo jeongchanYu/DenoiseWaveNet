@@ -86,8 +86,9 @@ def train_step(dist_inputs):
         with tf.GradientTape() as tape:
             y_pred = model(x)
             loss = tf.reduce_sum(loss_object(y, y_pred, 2)) * (1.0 / batch_size)
-            gradients = tape.gradient(loss, model.trainable_variables)
-            optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+        gradients = tape.gradient(loss, model.trainable_variables)
+        optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+        return loss_object
     per_example_losses = mirrored_strategy.experimental_run_v2(step_fn, args=(dist_inputs,))
     mean_loss = mirrored_strategy.reduce(tf.distribute.ReduceOp.MEAN, per_example_losses, axis=0)
     train_loss(mean_loss)

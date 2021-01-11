@@ -116,8 +116,8 @@ def train_step(x, y):
     with tf.GradientTape() as tape:
         y_pred = model(x)
         loss = loss_object(y, y_pred, 2)
-        gradients = tape.gradient(loss, model.trainable_variables)
-        optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+    gradients = tape.gradient(loss, model.trainable_variables)
+    optimizer.apply_gradients(zip(gradients, model.trainable_variables))
     train_loss(loss)
 
 # test function
