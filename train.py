@@ -73,7 +73,7 @@ optimizer = tf.keras.optimizers.Adam(learning_rate=config['learning_rate'])
 train_loss =tf.keras.metrics.Mean(name='train_loss')
 
 # train function
-# @tf.function
+@tf.function
 def train_step(x, y):
     with tf.GradientTape() as tape:
         y_pred = model(x)
