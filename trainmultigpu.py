@@ -70,7 +70,7 @@ with mirrored_strategy.scope():
     if config['load_check_point_name'] != "":
         model.load_weights('{}/checkpoint/{}/data.ckpt'.format(cf.load_path(), config['load_check_point_name']))
 
-    loss_object = tf.keras.losses.MeanAbsoluteError()
+    loss_object = tf.keras.losses.MeanAbsoluteError(reduction=tf.keras.losses.Reduction.NONE)
     optimizer = tf.keras.optimizers.Adam(learning_rate=config['learning_rate'])
     train_loss =tf.keras.metrics.Mean(name='train_loss')
 
