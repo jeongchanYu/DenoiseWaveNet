@@ -10,8 +10,8 @@ class DenoiseWaveNet(Model):
         self.relu = lambda x: tf.keras.activations.relu(x, alpha=relu_alpha)
         self.dilation = dilation
 
-        self.conv_input = Conv1D(128, 1)
-        self.conv_gated_in = [Conv1D(128, 1, padding='same', dilation_rate=d) for d in self.dilation]
+        self.conv_input = Conv1D(128, 3, padding='same')
+        self.conv_gated_in = [Conv1D(128, 3, padding='same', dilation_rate=d) for d in self.dilation]
         self.conv_gated_out = [Conv1D(128, 1) for l in self.dilation]
         self.conv_out1 = Conv1D(2048, 3, padding='same', activation=self.relu)
         self.conv_out2 = Conv1D(256, 3, padding='same', activation=self.relu)

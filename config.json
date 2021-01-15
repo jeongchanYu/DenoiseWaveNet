@@ -1,22 +1,22 @@
 {
-  "previous_size" : 800,
-  "current_size"  : 800,
-  "future_size"   : 800,
-  "shift_size"    : 800,
+  "previous_size" : 2269,
+  "current_size"  : 1601,
+  "future_size"   : 2269,
+  "shift_size"    : 1601,
 
-  "dilation"      : [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512],
-  "batch_size"    : 5,
-  "epochs"        : 100,
+  "dilation"      : [1, 2, 4, 8, 16, 32, 64, 128, 256, 512],
+  "batch_size"    : 1,
+  "epochs"        : 10000,
   "learning_rate" : 0.001,
-  "relu_alpha"    : 0.1,
+  "relu_alpha"    : 0.0,
   "default_float" : "float32",
 
-  "load_check_point_name" : "",
-  "save_check_point_name" : "metro51",
+  "load_check_point_name" : "pink_4854",
+  "save_check_point_name" : "pink",
 
-  "training_source_file"  : "./dataset/metro/51min/noise20_book_51min.wav",
-  "training_target_file"  : "./dataset/metro/51min/original_book_51min.wav",
+  "training_source_file"  : "./dataset/pink/original1_pink.wav",
+  "training_target_file"  : "./dataset/pink/original1.wav",
 
-  "test_source_file"  : "./dataset/metro/51min/noise20_book_51min.wav",
-  "test_target_file"  : "./dataset/metro/51min/original_book_51min.wav"
+  "test_source_file"  : "./dataset/pink/original1long_pink.wav",
+  "test_target_file"  : "./dataset/pink/original1long.wav"
 }

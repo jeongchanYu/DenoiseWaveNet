@@ -82,7 +82,7 @@ def train_step(x, y):
     optimizer.apply_gradients(zip(gradients, model.trainable_variables))
     train_loss(loss)
 
-# train run
+# train run78888
 for epoch in range(epochs):
     i = 0
     start = time.time()
