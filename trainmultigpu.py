@@ -72,7 +72,7 @@ with mirrored_strategy.scope():
 
     loss_object = tf.keras.losses.MeanAbsoluteError(reduction=tf.keras.losses.Reduction.NONE)
     optimizer = tf.keras.optimizers.Adam(learning_rate=config['learning_rate'])
-    train_loss =tf.keras.metrics.Mean(name='train_loss')
+    train_loss = tf.keras.metrics.Mean(name='train_loss')
 
 with mirrored_strategy.scope():
     train_dataset = tf.data.Dataset.from_tensor_slices((x_signal, y_signal)).batch(batch_size)
@@ -83,9 +83,16 @@ with mirrored_strategy.scope():
 def train_step(dist_inputs):
     def step_fn(inputs):
         x, y = inputs
+        y_true = tf.squeeze(y)
+        if len(y_true.shape) == 2:
+            start = [0, previous_size]
+            size = [-1, current_size]
+        elif len(y_true.shape) == 1:
+            start = [previous_size]
+            size = [current_size]
         with tf.GradientTape() as tape:
             y_pred = model(x)
-            mae = loss_object(y, y_pred, 2)
+            mae = loss_object(tf.slice(y_true, start, size), tf.slice(y_pred, start, size), 2)
             loss = tf.reduce_sum(mae) * (1.0/batch_size)
         gradients = tape.gradient(loss, model.trainable_variables)
         optimizer.apply_gradients(zip(gradients, model.trainable_variables))

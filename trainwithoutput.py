@@ -113,9 +113,16 @@ test_loss = tf.keras.metrics.Mean(name='test_loss')
 # train function
 @tf.function
 def train_step(x, y):
+    y_true = tf.squeeze(y)
+    if len(y_true.shape) == 2:
+        start = [0,previous_size]
+        size = [-1,current_size]
+    elif len(y_true.shape) == 1:
+        start = [previous_size]
+        size = [current_size]
     with tf.GradientTape() as tape:
         y_pred = model(x)
-        loss = loss_object(y, y_pred, 2)
+        loss = loss_object(tf.slice(y_true, start, size), tf.slice(y_pred, start, size), 2)
     gradients = tape.gradient(loss, model.trainable_variables)
     optimizer.apply_gradients(zip(gradients, model.trainable_variables))
     train_loss(loss)

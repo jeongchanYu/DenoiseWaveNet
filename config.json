@@ -1,17 +1,17 @@
 {
-  "previous_size" : 2269,
-  "current_size"  : 1601,
-  "future_size"   : 2269,
-  "shift_size"    : 1601,
+  "previous_size" : 2,
+  "current_size"  : 3,
+  "future_size"   : 2,
+  "shift_size"    : 2,
 
   "dilation"      : [1, 2, 4, 8, 16, 32, 64, 128, 256, 512],
-  "batch_size"    : 1,
+  "batch_size"    : 3,
   "epochs"        : 10000,
   "learning_rate" : 0.001,
   "relu_alpha"    : 0.0,
   "default_float" : "float32",
 
-  "load_check_point_name" : "pink_4854",
+  "load_check_point_name" : "",
   "save_check_point_name" : "pink",
 
   "training_source_file"  : "./dataset/pink/original1_pink.wav",
