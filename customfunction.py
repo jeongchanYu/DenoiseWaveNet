@@ -21,3 +21,11 @@ def process_time(func):
         func()
         print("Processing time :", datetime.timedelta(seconds=time.time()-start))
     return wrapper
+
+def write_plot_file(filename, index, value):
+    with open(filename, 'a') as f:
+        f.write("{{x:{}, y:{}}},".format(index, value))
+
+def clear_plot_file(filename):
+    with open(filename, 'w') as f:
+        pass

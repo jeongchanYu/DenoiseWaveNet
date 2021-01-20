@@ -1,12 +1,12 @@
 {
-  "previous_size" : 2,
-  "current_size"  : 3,
-  "future_size"   : 2,
-  "shift_size"    : 2,
+  "previous_size" : 1600,
+  "current_size"  : 1600,
+  "future_size"   : 1600,
+  "shift_size"    : 1600,
 
   "dilation"      : [1, 2, 4, 8, 16, 32, 64, 128, 256, 512],
-  "batch_size"    : 3,
-  "epochs"        : 10000,
+  "batch_size"    : 1,
+  "epochs"        : 1000,
   "learning_rate" : 0.001,
   "relu_alpha"    : 0.0,
   "default_float" : "float32",
@@ -18,5 +18,7 @@
   "training_target_file"  : "./dataset/pink/original1.wav",
 
   "test_source_file"  : "./dataset/pink/original1long_pink.wav",
-  "test_target_file"  : "./dataset/pink/original1long.wav"
+  "test_target_file"  : "./dataset/pink/original1long.wav",
+
+  "plot_file" : "pink_loss.plot"
 }

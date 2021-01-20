@@ -28,6 +28,7 @@ shift_size = config['shift_size']
 batch_size = config['batch_size']
 epochs = config['epochs']
 
+
 # read train data file
 target_signal, target_sample_rate = wav.read_wav(config['training_target_file'])
 source_signal, source_sample_rate = wav.read_wav(config['training_source_file'])
@@ -67,6 +68,8 @@ model = wavenet.DenoiseWaveNet(config['dilation'], config['relu_alpha'], config[
 # load model
 if config['load_check_point_name'] != "":
     model.load_weights('{}/checkpoint/{}/data.ckpt'.format(cf.load_path(), config['load_check_point_name']))
+else:
+    cf.clear_plot_file('{}/{}'.format(cf.load_path(), config['plot_file']))
 
 loss_object = tf.keras.losses.MeanAbsoluteError()
 optimizer = tf.keras.optimizers.Adam(learning_rate=config['learning_rate'])
@@ -101,3 +104,4 @@ for epoch in range(epochs):
 
     cf.createFolder("{}/checkpoint/{}_{}".format(cf.load_path(), config['save_check_point_name'], epoch+1))
     model.save_weights('{}/checkpoint/{}_{}/data.ckpt'.format(cf.load_path(), config['save_check_point_name'], epoch+1))
+    cf.write_plot_file('{}/{}'.format(cf.load_path(), config['plot_file']), epoch+1, train_loss.result())
