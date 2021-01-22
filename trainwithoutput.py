@@ -174,7 +174,7 @@ for epoch in range(saved_epoch, saved_epoch + epochs):
     i = 0
     start = time.time()
     for x, y in train_dataset:
-        print("\rTrain : epoch {}/{}, training {}/{}".format(epoch + 1, epochs, i + 1, math.ceil(num_of_total_frame / batch_size)), end='')
+        print("\rTrain : epoch {}/{}, training {}/{}".format(epoch + 1, saved_epoch+epochs, i + 1, math.ceil(num_of_total_frame / batch_size)), end='')
         train_step(x, y)
         i += 1
     print(" | loss : {}".format(train_loss.result()), " | Processing time :", datetime.timedelta(seconds=time.time() - start))
@@ -185,7 +185,7 @@ for epoch in range(saved_epoch, saved_epoch + epochs):
     sample = 0
     start = time.time()
     while sample < test_size_of_source:
-        print("\rTest : epoch {}/{}, training {}/{}".format(epoch + 1, epochs, i + 1, math.ceil(test_size_of_source/current_size)), end='')
+        print("\rTest : epoch {}/{}, training {}/{}".format(epoch + 1, saved_epoch+epochs, i + 1, math.ceil(test_size_of_source/current_size)), end='')
         y_pred = test_step(test_source_signal_padded[sample:sample+previous_size+current_size+future_size],
                            test_target_signal_padded[sample:sample+previous_size+current_size+future_size])
         y_pred = np.array(y_pred, dtype=default_float)

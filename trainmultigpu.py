@@ -134,7 +134,7 @@ with mirrored_strategy.scope():
         i = 0
         start = time.time()
         for inputs in dist_dataset:
-            print("\rTrain : epoch {}/{}, training {}/{}".format(epoch + 1, epochs, i + 1, math.ceil(num_of_total_frame / batch_size)), end='')
+            print("\rTrain : epoch {}/{}, training {}/{}".format(epoch + 1, saved_epoch+epochs, i + 1, math.ceil(num_of_total_frame / batch_size)), end='')
             train_step(inputs)
             i += 1
         print(" | loss : {}".format(train_loss.result()), " | Processing time :", datetime.timedelta(seconds=time.time() - start))
