@@ -7,6 +7,7 @@ import customfunction as cf
 import time
 import datetime
 import math
+import os
 
 # prevent GPU overflow
 gpu_config = tf.compat.v1.ConfigProto()
@@ -18,6 +19,7 @@ session = tf.compat.v1.InteractiveSession(config=gpu_config)
 with open("config.json", "r") as f_json:
     config = json.load(f_json)
 
+default_float = config['default_float']
 previous_size = int(config['previous_size'])
 current_size = int(config['current_size'])
 future_size = int(config['future_size'])
@@ -41,8 +43,8 @@ if test_size_of_source != test_size_of_target:
     raise Exception("ERROR: Test input, output size mismatch")
 
 test_mod = (current_size - (test_size_of_source % current_size)) % current_size
-test_target_signal_padded = np.concatenate([np.zeros(previous_size), test_target_signal, np.zeros(future_size + test_mod)]).astype('float32')
-test_source_signal_padded = np.concatenate([np.zeros(previous_size), test_source_signal, np.zeros(future_size + test_mod)]).astype('float32')
+test_target_signal_padded = np.concatenate([np.zeros(previous_size), test_target_signal, np.zeros(future_size + test_mod)]).astype(default_float)
+test_source_signal_padded = np.concatenate([np.zeros(previous_size), test_source_signal, np.zeros(future_size + test_mod)]).astype(default_float)
 
 # make model
 model = wavenet.DenoiseWaveNet(config['dilation'], config['relu_alpha'], config['default_float'])
@@ -53,6 +55,7 @@ if config['load_check_point_name'] != "":
 
 loss_object = tf.keras.losses.MeanAbsoluteError()
 test_loss = tf.keras.metrics.Mean(name='test_loss')
+
 
 # test function
 @tf.function
@@ -72,11 +75,11 @@ i=0
 sample = 0
 start = time.time()
 while sample < test_size_of_source:
-    print("\rTest : frame {}/{}".format(i + 1, math.ceil(test_size_of_source / current_size)), end='')
+    print("\rTest : training {}/{}".format(i + 1, math.ceil(test_size_of_source / current_size)), end='')
     y_pred = test_step(test_source_signal_padded[sample:sample + previous_size + current_size + future_size],
                            test_target_signal_padded[sample:sample + previous_size + current_size + future_size])
-    y_pred = np.array(y_pred, dtype='float64')
-    b_pred = np.array(test_source_signal_padded[sample:sample + previous_size + current_size + future_size], dtype='float64') - y_pred
+    y_pred = np.array(y_pred, dtype=default_float)
+    b_pred = np.array(test_source_signal_padded[sample:sample + previous_size + current_size + future_size], dtype=default_float) - y_pred
     y_pred = y_pred.tolist()
     b_pred = b_pred.tolist()
     result.extend(y_pred[previous_size:previous_size + current_size])
