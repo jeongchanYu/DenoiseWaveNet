@@ -42,8 +42,8 @@ if target_path_isdir:
     training_target_file_list = cf.read_path_list(training_target_path, "wav")
     training_source_file_list = cf.read_path_list(training_source_path, "wav")
 else:
-    training_target_file_list = list(training_target_path)
-    training_source_file_list = list(training_source_path)
+    training_target_file_list = [training_target_path]
+    training_source_file_list = [training_source_path]
 
 
 x_signal, y_signal = [], []
@@ -123,7 +123,7 @@ for epoch in range(saved_epoch, saved_epoch+epochs):
     i = 0
     start = time.time()
     for x, y in train_dataset:
-        print("\rTrain : epoch {}/{}, training {}/{}".format(saved_epoch+epochs + 1, epochs, i + 1, math.ceil(num_of_total_frame / batch_size)), end='')
+        print("\rTrain : epoch {}/{}, training {}/{}".format(epoch + 1, saved_epoch+epochs, i + 1, math.ceil(num_of_total_frame / batch_size)), end='')
         train_step(x, y)
         i += 1
     print(" | loss : {}".format(train_loss.result()), " | Processing time :", datetime.timedelta(seconds=time.time() - start))

@@ -42,8 +42,8 @@ if target_path_isdir:
     training_target_file_list = cf.read_path_list(training_target_path, "wav")
     training_source_file_list = cf.read_path_list(training_source_path, "wav")
 else:
-    training_target_file_list = list(training_target_path)
-    training_source_file_list = list(training_source_path)
+    training_target_file_list = [training_target_path]
+    training_source_file_list = [training_source_path]
 
 
 x_signal, y_signal = [], []
