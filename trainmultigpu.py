@@ -118,7 +118,9 @@ def train_step(dist_inputs):
             size = [current_size]
         with tf.GradientTape() as tape:
             y_pred = model(x)
-            mae = loss_object(tf.slice(y_true, start, size), tf.slice(y_pred, start, size), 2)
+            mae = loss_object(tf.slice(y_true, start, size), tf.slice(y_pred, start, size))*2
+            if len(mae.shape) == 0:
+                mae = tf.reshape(mae, [1])
             loss = tf.reduce_sum(mae) * (1.0/batch_size)
         gradients = tape.gradient(loss, model.trainable_variables)
         optimizer.apply_gradients(zip(gradients, model.trainable_variables))

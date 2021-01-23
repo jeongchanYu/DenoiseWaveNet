@@ -62,9 +62,9 @@ test_loss = tf.keras.metrics.Mean(name='test_loss')
 def test_step(x, y):
     y_pred = model(x)
     if test_target_file_exist:
-        loss = loss_object(y, y_pred, 2)
+        loss = loss_object(y, y_pred)*2
     else:
-        loss = loss_object(y_pred, y_pred, 2)
+        loss = loss_object(y_pred, y_pred)*2
     test_loss(loss)
     return y_pred
 

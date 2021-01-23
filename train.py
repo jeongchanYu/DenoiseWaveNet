@@ -112,7 +112,7 @@ def train_step(x, y):
         size = [current_size]
     with tf.GradientTape() as tape:
         y_pred = model(x)
-        loss = loss_object(tf.slice(y_true, start, size), tf.slice(y_pred, start, size), 2)
+        loss = loss_object(tf.slice(y_true, start, size), tf.slice(y_pred, start, size))*2
     gradients = tape.gradient(loss, model.trainable_variables)
     optimizer.apply_gradients(zip(gradients, model.trainable_variables))
     train_loss(loss)
