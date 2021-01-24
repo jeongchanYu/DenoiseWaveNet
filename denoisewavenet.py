@@ -11,8 +11,10 @@ class DenoiseWaveNet(Model):
         self.dilation = dilation
 
         self.conv_input = Conv1D(128, 3, padding='same')
-        self.conv_gated_in = [Conv1D(128, 3, padding='same', dilation_rate=d) for d in self.dilation]
-        self.conv_gated_out = [Conv1D(128, 1) for l in self.dilation]
+        self.conv_gated_tanh = [Conv1D(128, 3, padding='same', dilation_rate=d, activation='tanh') for d in self.dilation]
+        self.conv_gated_sigmoid = [Conv1D(128, 3, padding='same', dilation_rate=d, activation='sigmoid') for d in self.dilation]
+        self.conv_residual = [Conv1D(128, 1) for l in self.dilation[:-2]]
+        self.conv_skip = [Conv1D(128, 1) for l in self.dilation]
         self.conv_out1 = Conv1D(2048, 3, padding='same', activation=self.relu)
         self.conv_out2 = Conv1D(256, 3, padding='same', activation=self.relu)
         self.conv_proj = Conv1D(1, 1, activation='tanh')
@@ -26,14 +28,13 @@ class DenoiseWaveNet(Model):
 
         temp_x = self.conv_input(temp_x)
         for i in range(len(self.dilation)):
-            dilated_x = self.conv_gated_in[i](temp_x)
-            dilated_x = tf.keras.activations.sigmoid(dilated_x) * tf.keras.activations.tanh(dilated_x)
-            dilated_x = self.conv_gated_out[i](dilated_x)
-            temp_x += dilated_x
+            dilated_x = self.conv_gated_tanh[i](temp_x) * self.conv_gated_sigmoid[i](temp_x)
+            if i != len(self.dilation)-1:
+                temp_x += self.conv_residual[i](dilated_x)
             if i == 0:
-                skip_output = dilated_x
+                skip_output = self.conv_skip[i](dilated_x)
             else:
-                skip_output += dilated_x
+                skip_output += self.conv_skip[i](dilated_x)
 
         skip_output = self.relu(skip_output)
         output1 = self.conv_out1(skip_output)
