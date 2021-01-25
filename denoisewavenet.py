@@ -13,7 +13,7 @@ class DenoiseWaveNet(Model):
         self.conv_input = Conv1D(128, 3, padding='same')
         self.conv_gated_tanh = [Conv1D(128, 3, padding='same', dilation_rate=d, activation='tanh') for d in self.dilation]
         self.conv_gated_sigmoid = [Conv1D(128, 3, padding='same', dilation_rate=d, activation='sigmoid') for d in self.dilation]
-        self.conv_residual = [Conv1D(128, 1) for l in self.dilation[:-2]]
+        self.conv_residual = [Conv1D(128, 1) for l in self.dilation[:-1]]
         self.conv_skip = [Conv1D(128, 1) for l in self.dilation]
         self.conv_out1 = Conv1D(2048, 3, padding='same', activation=self.relu)
         self.conv_out2 = Conv1D(256, 3, padding='same', activation=self.relu)

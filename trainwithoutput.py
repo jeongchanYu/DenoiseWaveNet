@@ -85,11 +85,11 @@ for i in range(len(training_target_file_list)):
 train_dataset = tf.data.Dataset.from_tensor_slices((x_signal, y_signal)).batch(batch_size)
 
 # in train with output, test data must be a file not a directory
-if os.path.isdir(training_target_path) or os.path.isdir(training_source_path):
+if os.path.isdir(config['test_source_file']) or os.path.isdir(config['test_target_file']):
     raise Exception("ERROR: In train with output, test data must be a file not a directory")
 
 # make test data
-if config['training_source_file'] != config['test_source_file']:
+if config['training_source_path'] != config['test_source_file']:
     test_source_signal, test_source_sample_rate = wav.read_wav(config['test_source_file'])
     if config['test_target_file'] == '':
         test_target_file_exist = False
