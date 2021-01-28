@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="258849a2-a056-4b53-a923-a6afda4eeb95" name="LAB-server4">
+        <fileTransfer rootFolder="/home/csp-server4" accessType="SFTP" host="128.134.65.25" port="12354" sshConfigId="c3a55475-0287-496e-882b-a8393f8d94f3" sshConfig="workstation@128.134.65.25:12354 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="ceff0c65-aa59-411f-a3be-8a2aed2f71d8" name="LAB-workstation">
+        <fileTransfer accessType="SFTP" host="128.134.65.25" port="12354" sshConfigId="c3a55475-0287-496e-882b-a8393f8d94f3" sshConfig="workstation@128.134.65.25:12354 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

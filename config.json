@@ -5,7 +5,7 @@
   "shift_size"    : 1601,
 
   "dilation"      : [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512],
-  "batch_size"    : 1,
+  "batch_size"    : 60,
   "epochs"        : 10000,
   "learning_rate" : 0.0001,
   "relu_alpha"    : 0.0,
@@ -14,11 +14,11 @@
   "load_check_point_name" : "",
   "save_check_point_name" : "voice",
 
-  "training_source_path"  : "./dataset/voice/source",
-  "training_target_path"  : "./dataset/voice/target",
+  "training_source_path"  : "./dataset/metro/36min/noise20_book_36min.wav",
+  "training_target_path"  : "./dataset/metro/36min/original_book_36min.wav",
 
   "test_source_file"  : "./dataset/voice/test_source/p226_031.wav",
   "test_target_file"  : "./dataset/voice/test_target/p226_031.wav",
 
-  "plot_file" : "voice_loss2.plot"
+  "plot_file" : "metro_noise.plot"
 }

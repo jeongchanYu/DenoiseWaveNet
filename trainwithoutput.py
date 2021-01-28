@@ -126,6 +126,10 @@ else:
 
 # make model
 model = wavenet.DenoiseWaveNet(config['dilation'], config['relu_alpha'], config['default_float'])
+loss_object = tf.keras.losses.MeanAbsoluteError()
+optimizer = tf.keras.optimizers.Adam(learning_rate=config['learning_rate'])
+train_loss =tf.keras.metrics.Mean(name='train_loss')
+test_loss = tf.keras.metrics.Mean(name='test_loss')
 
 # load model
 if config['load_check_point_name'] != "":
@@ -134,11 +138,6 @@ if config['load_check_point_name'] != "":
 else:
     cf.clear_plot_file('{}/{}'.format(cf.load_path(), config['plot_file']))
     saved_epoch = 0
-
-loss_object = tf.keras.losses.MeanAbsoluteError()
-optimizer = tf.keras.optimizers.Adam(learning_rate=config['learning_rate'])
-train_loss =tf.keras.metrics.Mean(name='train_loss')
-test_loss = tf.keras.metrics.Mean(name='test_loss')
 
 # train function
 @tf.function

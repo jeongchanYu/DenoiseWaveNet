@@ -89,6 +89,10 @@ mirrored_strategy = tf.distribute.MirroredStrategy()
 with mirrored_strategy.scope():
     # make model
     model = wavenet.DenoiseWaveNet(config['dilation'], config['relu_alpha'], config['default_float'])
+    loss_object = tf.keras.losses.MeanAbsoluteError(reduction=tf.keras.losses.Reduction.NONE)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=config['learning_rate'])
+    train_loss = tf.keras.metrics.Mean(name='train_loss')
+
     # load model
     if config['load_check_point_name'] != "":
         model.load_weights('{}/checkpoint/{}/data.ckpt'.format(cf.load_path(), config['load_check_point_name']))
@@ -96,10 +100,6 @@ with mirrored_strategy.scope():
     else:
         cf.clear_plot_file('{}/{}'.format(cf.load_path(), config['plot_file']))
         saved_epoch = 0
-
-    loss_object = tf.keras.losses.MeanAbsoluteError(reduction=tf.keras.losses.Reduction.NONE)
-    optimizer = tf.keras.optimizers.Adam(learning_rate=config['learning_rate'])
-    train_loss = tf.keras.metrics.Mean(name='train_loss')
 
     train_dataset = tf.data.Dataset.from_tensor_slices((x_signal, y_signal)).batch(batch_size)
     dist_dataset = mirrored_strategy.experimental_distribute_dataset(dataset=train_dataset)
