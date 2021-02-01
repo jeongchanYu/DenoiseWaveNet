@@ -101,7 +101,7 @@ with mirrored_strategy.scope():
         cf.clear_plot_file('{}/{}'.format(cf.load_path(), config['plot_file']))
         saved_epoch = 0
 
-    train_dataset = tf.data.Dataset.from_tensor_slices((x_signal, y_signal)).batch(batch_size)
+    train_dataset = tf.data.Dataset.from_tensor_slices((x_signal, y_signal)).shuffle(number_of_frames).batch(batch_size)
     dist_dataset = mirrored_strategy.experimental_distribute_dataset(dataset=train_dataset)
 
 # train function
@@ -140,6 +140,7 @@ with mirrored_strategy.scope():
             train_step(inputs)
             i += 1
         print(" | loss : {}".format(train_loss.result()), " | Processing time :", datetime.timedelta(seconds=time.time() - start))
+        train_loss.reset_states()
 
         cf.createFolder("{}/checkpoint/{}_{}".format(cf.load_path(), config['save_check_point_name'], epoch+1))
         model.save_weights('{}/checkpoint/{}_{}/data.ckpt'.format(cf.load_path(), config['save_check_point_name'], epoch+1))

@@ -83,7 +83,7 @@ for i in range(len(training_target_file_list)):
         y_signal.append(target_signal_padded[j*shift_size:(j*shift_size) + receptive_size])
 
 
-train_dataset = tf.data.Dataset.from_tensor_slices((x_signal, y_signal)).batch(batch_size)
+train_dataset = tf.data.Dataset.from_tensor_slices((x_signal, y_signal)).shuffle(number_of_frames).batch(batch_size)
 
 # make model
 model = wavenet.DenoiseWaveNet(config['dilation'], config['relu_alpha'], config['default_float'])
@@ -126,6 +126,7 @@ for epoch in range(saved_epoch, saved_epoch+epochs):
         train_step(x, y)
         i += 1
     print(" | loss : {}".format(train_loss.result()), " | Processing time :", datetime.timedelta(seconds=time.time() - start))
+    train_loss.reset_states()
 
     cf.createFolder("{}/checkpoint/{}_{}".format(cf.load_path(), config['save_check_point_name'], epoch+1))
     model.save_weights('{}/checkpoint/{}_{}/data.ckpt'.format(cf.load_path(), config['save_check_point_name'], epoch+1))

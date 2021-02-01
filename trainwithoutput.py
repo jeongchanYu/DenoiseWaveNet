@@ -82,7 +82,7 @@ for i in range(len(training_target_file_list)):
         y_signal.append(target_signal_padded[j*shift_size:(j*shift_size) + receptive_size])
 
 
-train_dataset = tf.data.Dataset.from_tensor_slices((x_signal, y_signal)).batch(batch_size)
+train_dataset = tf.data.Dataset.from_tensor_slices((x_signal, y_signal)).shuffle(number_of_frames).batch(batch_size)
 
 # in train with output, test data must be a file not a directory
 if os.path.isdir(config['test_source_file']) or os.path.isdir(config['test_target_file']):
@@ -177,6 +177,7 @@ for epoch in range(saved_epoch, saved_epoch + epochs):
         train_step(x, y)
         i += 1
     print(" | loss : {}".format(train_loss.result()), " | Processing time :", datetime.timedelta(seconds=time.time() - start))
+    train_loss.reset_states()
 
     result = []
     result_noise = []
@@ -196,6 +197,7 @@ for epoch in range(saved_epoch, saved_epoch + epochs):
         sample += current_size
         i += 1
     print(" | loss : {}".format(test_loss.result()), " | Processing time :", datetime.timedelta(seconds=time.time() - start))
+    test_loss.reset_states()
 
     # save checkpoint
     cf.createFolder("{}/checkpoint/{}_{}".format(cf.load_path(), config['save_check_point_name'], epoch+1))

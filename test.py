@@ -87,6 +87,7 @@ while sample < test_size_of_source:
     sample += current_size
     i += 1
 print(" | loss : {}".format(test_loss.result()), " | Processing time :", datetime.timedelta(seconds=time.time() - start))
+test_loss.reset_states()
 
 # save output
 cf.createFolder("{}/test_result".format(cf.load_path()))

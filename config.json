@@ -11,14 +11,14 @@
   "relu_alpha"    : 0.0,
   "default_float" : "float32",
 
-  "load_check_point_name" : "",
+  "load_check_point_name" : "voice_1700",
   "save_check_point_name" : "voice",
 
   "training_source_path"  : "./dataset/metro/36min/noise20_book_36min.wav",
   "training_target_path"  : "./dataset/metro/36min/original_book_36min.wav",
 
-  "test_source_file"  : "./dataset/voice/test_source/p226_031.wav",
-  "test_target_file"  : "./dataset/voice/test_target/p226_031.wav",
+  "test_source_file"  : "./dataset/metro/51min/noise20_book_51min.wav",
+  "test_target_file"  : "./dataset/metro/51min/original_book_51min.wav",
 
   "plot_file" : "metro_noise.plot"
 }
