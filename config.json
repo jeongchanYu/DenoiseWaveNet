@@ -5,13 +5,13 @@
   "shift_size"    : 1601,
 
   "dilation"      : [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512],
-  "batch_size"    : 20,
+  "batch_size"    : 1,
   "epochs"        : 10000,
   "learning_rate" : 0.0001,
   "relu_alpha"    : 0.0,
   "default_float" : "float32",
 
-  "load_check_point_name" : "",
+  "load_check_point_name" : "voice_4",
   "save_check_point_name" : "voice",
 
   "training_source_path"  : "./dataset/pink/original1_pink.wav",

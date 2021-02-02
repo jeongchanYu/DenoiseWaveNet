@@ -135,6 +135,7 @@ test_loss = tf.keras.metrics.Mean(name='test_loss')
 
 # load model
 if load_check_point_name != "":
+    model(next(iter(train_dataset))[0])
     model.load_weights('{}/checkpoint/{}/data.ckpt'.format(cf.load_path(), load_check_point_name))
     model.load_optimizer_state(optimizer, '{}/checkpoint/{}'.format(cf.load_path(), load_check_point_name), 'optimizer', model.trainable_variables)
     saved_epoch = int(load_check_point_name.split('_')[-1])

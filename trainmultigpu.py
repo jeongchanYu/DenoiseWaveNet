@@ -89,6 +89,9 @@ for i in range(len(training_target_file_list)):
 mirrored_strategy = tf.distribute.MirroredStrategy()
 
 with mirrored_strategy.scope():
+    train_dataset = tf.data.Dataset.from_tensor_slices((x_signal, y_signal)).shuffle(number_of_frames).batch(batch_size)
+    dist_dataset = mirrored_strategy.experimental_distribute_dataset(dataset=train_dataset)
+
     # make model
     model = wavenet.DenoiseWaveNet(config['dilation'], config['relu_alpha'], config['default_float'])
     loss_object = tf.keras.losses.MeanAbsoluteError(reduction=tf.keras.losses.Reduction.NONE)
@@ -97,6 +100,11 @@ with mirrored_strategy.scope():
 
     # load model
     if load_check_point_name != "":
+        def temp(inputs):
+            x, y = inputs
+            model(x)
+            return 0
+        mirrored_strategy.experimental_run_v2(temp, args=(next(iter(dist_dataset)),))
         model.load_weights('{}/checkpoint/{}/data.ckpt'.format(cf.load_path(), load_check_point_name))
         model.load_optimizer_state(optimizer, '{}/checkpoint/{}'.format(cf.load_path(), load_check_point_name), 'optimizer', model.trainable_variables)
         saved_epoch = int(load_check_point_name.split('_')[-1])
@@ -104,8 +112,6 @@ with mirrored_strategy.scope():
         cf.clear_plot_file('{}/{}'.format(cf.load_path(), config['plot_file']))
         saved_epoch = 0
 
-    train_dataset = tf.data.Dataset.from_tensor_slices((x_signal, y_signal)).shuffle(number_of_frames).batch(batch_size)
-    dist_dataset = mirrored_strategy.experimental_distribute_dataset(dataset=train_dataset)
 
 # train function
 @tf.function
@@ -131,7 +137,6 @@ def train_step(dist_inputs):
     per_example_losses = mirrored_strategy.experimental_run_v2(step_fn, args=(dist_inputs,))
     mean_loss = mirrored_strategy.reduce(tf.distribute.ReduceOp.SUM, per_example_losses, axis=0)
     train_loss(mean_loss/batch_size)
-
 
 # train run
 with mirrored_strategy.scope():
