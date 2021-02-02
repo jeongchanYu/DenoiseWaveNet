@@ -1,6 +1,8 @@
 import tensorflow as tf
 from tensorflow.keras.layers import Conv1D
 from tensorflow.keras import Model
+import numpy as np
+import os
 
 class DenoiseWaveNet(Model):
     def __init__(self, dilation, relu_alpha=0.0, default_float='float32'):
@@ -42,3 +44,55 @@ class DenoiseWaveNet(Model):
         output2 = self.conv_proj(output2)
         output2 = tf.squeeze(output2)
         return output2
+
+    def save_optimizer_state(self, optimizer, save_path, save_name):
+        '''
+        Save keras.optimizers object state.
+
+        Arguments:
+        optimizer --- Optimizer object.
+        save_path --- Path to save location.
+        save_name --- Name of the .npy file to be created.
+
+        '''
+
+        # Create folder if it does not exists
+        if not os.path.exists(save_path):
+            os.makedirs(save_path)
+
+        # save weights
+        np.save(os.path.join(save_path, save_name), optimizer.get_weights())
+
+        return
+
+
+    def load_optimizer_state(self, optimizer, load_path, load_name, model_train_vars):
+        '''
+        Loads keras.optimizers object state.
+
+        Arguments:
+        optimizer --- Optimizer object to be loaded.
+        load_path --- Path to save location.
+        load_name --- Name of the .npy file to be read.
+        model_train_vars --- List of model variables (obtained using Model.trainable_variables)
+
+        '''
+
+        # Load optimizer weights
+        opt_weights = np.load(os.path.join(load_path, load_name) + '.npy', allow_pickle=True)
+
+        # dummy zero gradients
+        zero_grads = [tf.zeros_like(w) for w in model_train_vars]
+        # save current state of variables
+        saved_vars = [tf.identity(w) for w in model_train_vars]
+
+        # Apply gradients which don't do nothing with Adam
+        optimizer.apply_gradients(zip(zero_grads, model_train_vars))
+
+        # Reload variables
+        [x.assign(y) for x, y in zip(model_train_vars, saved_vars)]
+
+        # Set the weights of the optimizer
+        optimizer.set_weights(opt_weights)
+
+        return
