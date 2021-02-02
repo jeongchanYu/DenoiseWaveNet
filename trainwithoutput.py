@@ -30,6 +30,8 @@ batch_size = int(config['batch_size'])
 epochs = int(config['epochs'])
 training_target_path = config['training_target_path']
 training_source_path = config['training_source_path']
+save_check_point_name = config['save_check_point_name']
+load_check_point_name = config['load_check_point_name']
 
 # training_target_path is path or file?
 target_path_isdir = os.path.isdir(training_target_path)
@@ -132,9 +134,10 @@ train_loss =tf.keras.metrics.Mean(name='train_loss')
 test_loss = tf.keras.metrics.Mean(name='test_loss')
 
 # load model
-if config['load_check_point_name'] != "":
-    model.load_weights('{}/checkpoint/{}/data.ckpt'.format(cf.load_path(), config['load_check_point_name']))
-    saved_epoch = int(config['load_check_point_name'].split('_')[-1])
+if load_check_point_name != "":
+    model.load_weights('{}/checkpoint/{}/data.ckpt'.format(cf.load_path(), load_check_point_name))
+    model.load_optimizer_state(optimizer, '{}/checkpoint/{}'.format(cf.load_path(), load_check_point_name), 'optimizer', model.trainable_variables)
+    saved_epoch = int(load_check_point_name.split('_')[-1])
 else:
     cf.clear_plot_file('{}/{}'.format(cf.load_path(), config['plot_file']))
     saved_epoch = 0
@@ -197,14 +200,16 @@ for epoch in range(saved_epoch, saved_epoch + epochs):
         sample += current_size
         i += 1
     print(" | loss : {}".format(test_loss.result()), " | Processing time :", datetime.timedelta(seconds=time.time() - start))
-    test_loss.reset_states()
 
     # save checkpoint
-    cf.createFolder("{}/checkpoint/{}_{}".format(cf.load_path(), config['save_check_point_name'], epoch+1))
-    model.save_weights('{}/checkpoint/{}_{}/data.ckpt'.format(cf.load_path(), config['save_check_point_name'], epoch+1))
+    cf.createFolder("{}/checkpoint/{}_{}".format(cf.load_path(), save_check_point_name, epoch+1))
+    model.save_weights('{}/checkpoint/{}_{}/data.ckpt'.format(cf.load_path(), save_check_point_name, epoch+1))
+    model.save_optimizer_state(optimizer, '{}/checkpoint/{}_{}'.format(cf.load_path(), save_check_point_name, epoch + 1), 'optimizer')
     cf.write_plot_file('{}/{}'.format(cf.load_path(), config['plot_file']), epoch+1, train_loss.result())
 
     # save output
     cf.createFolder("{}/train_result".format(cf.load_path()))
     wav.write_wav(result[:len(result)-test_mod], "{}/train_result/result{}.wav".format(cf.load_path(), epoch + 1), test_source_sample_rate)
     wav.write_wav(result_noise[:len(result_noise)-test_mod], "{}/train_result/result_noise{}.wav".format(cf.load_path(), epoch + 1), test_source_sample_rate)
+
+    test_loss.reset_states()

@@ -24,6 +24,7 @@ previous_size = int(config['previous_size'])
 current_size = int(config['current_size'])
 future_size = int(config['future_size'])
 receptive_size = previous_size + current_size + future_size
+load_check_point_name = config['load_check_point_name']
 
 # make test data
 test_source_signal, test_source_sample_rate = wav.read_wav(config['test_source_file'])
@@ -50,8 +51,8 @@ test_source_signal_padded = np.concatenate([np.zeros(previous_size), test_source
 model = wavenet.DenoiseWaveNet(config['dilation'], config['relu_alpha'], config['default_float'])
 
 # load model
-if config['load_check_point_name'] != "":
-    model.load_weights('{}/checkpoint/{}/data.ckpt'.format(cf.load_path(), config['load_check_point_name']))
+if load_check_point_name != "":
+    model.load_weights('{}/checkpoint/{}/data.ckpt'.format(cf.load_path(), load_check_point_name))
 
 loss_object = tf.keras.losses.MeanAbsoluteError()
 test_loss = tf.keras.metrics.Mean(name='test_loss')
@@ -87,9 +88,10 @@ while sample < test_size_of_source:
     sample += current_size
     i += 1
 print(" | loss : {}".format(test_loss.result()), " | Processing time :", datetime.timedelta(seconds=time.time() - start))
-test_loss.reset_states()
 
 # save output
 cf.createFolder("{}/test_result".format(cf.load_path()))
 wav.write_wav(result[:len(result) - test_mod], "{}/test_result/result.wav".format(cf.load_path()), test_source_sample_rate)
 wav.write_wav(result_noise[:len(result_noise) - test_mod], "{}/test_result/result_noise.wav".format(cf.load_path()), test_source_sample_rate)
+
+test_loss.reset_states()

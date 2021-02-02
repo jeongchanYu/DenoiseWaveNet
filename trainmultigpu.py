@@ -30,6 +30,8 @@ batch_size = config['batch_size']
 epochs = config['epochs']
 training_target_path = config['training_target_path']
 training_source_path = config['training_source_path']
+save_check_point_name = config['save_check_point_name']
+load_check_point_name = config['load_check_point_name']
 
 # training_target_path is path or file?
 target_path_isdir = os.path.isdir(training_target_path)
@@ -94,9 +96,10 @@ with mirrored_strategy.scope():
     train_loss = tf.keras.metrics.Mean(name='train_loss')
 
     # load model
-    if config['load_check_point_name'] != "":
-        model.load_weights('{}/checkpoint/{}/data.ckpt'.format(cf.load_path(), config['load_check_point_name']))
-        saved_epoch = int(config['load_check_point_name'].split('_')[-1])
+    if load_check_point_name != "":
+        model.load_weights('{}/checkpoint/{}/data.ckpt'.format(cf.load_path(), load_check_point_name))
+        model.load_optimizer_state(optimizer, '{}/checkpoint/{}'.format(cf.load_path(), load_check_point_name), 'optimizer', model.trainable_variables)
+        saved_epoch = int(load_check_point_name.split('_')[-1])
     else:
         cf.clear_plot_file('{}/{}'.format(cf.load_path(), config['plot_file']))
         saved_epoch = 0
@@ -140,8 +143,9 @@ with mirrored_strategy.scope():
             train_step(inputs)
             i += 1
         print(" | loss : {}".format(train_loss.result()), " | Processing time :", datetime.timedelta(seconds=time.time() - start))
-        train_loss.reset_states()
 
-        cf.createFolder("{}/checkpoint/{}_{}".format(cf.load_path(), config['save_check_point_name'], epoch+1))
-        model.save_weights('{}/checkpoint/{}_{}/data.ckpt'.format(cf.load_path(), config['save_check_point_name'], epoch+1))
+        cf.createFolder("{}/checkpoint/{}_{}".format(cf.load_path(), save_check_point_name, epoch+1))
+        model.save_weights('{}/checkpoint/{}_{}/data.ckpt'.format(cf.load_path(), save_check_point_name, epoch+1))
+        model.save_optimizer_state(optimizer, '{}/checkpoint/{}_{}'.format(cf.load_path(), save_check_point_name, epoch + 1), 'optimizer')
         cf.write_plot_file('{}/{}'.format(cf.load_path(), config['plot_file']), epoch+1, train_loss.result())
+        train_loss.reset_states()
