@@ -3,7 +3,6 @@
   <component name="SshConfigs">
     <configs>
       <sshConfig authType="PASSWORD" host="128.134.65.25" id="c3a55475-0287-496e-882b-a8393f8d94f3" port="12354" nameFormat="DESCRIPTIVE" username="workstation" />
-      <sshConfig authType="PASSWORD" host="128.134.65.29" id="44d8cc32-daf5-4bea-ab42-3eb62065ba1f" port="12356" nameFormat="DESCRIPTIVE" username="csp-server4" />
     </configs>
   </component>
 </project>

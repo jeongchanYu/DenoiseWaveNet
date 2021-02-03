@@ -93,16 +93,6 @@ loss_object = tf.keras.losses.MeanAbsoluteError()
 optimizer = tf.keras.optimizers.Adam(learning_rate=config['learning_rate'])
 train_loss = tf.keras.metrics.Mean(name='train_loss')
 
-# load model
-if load_check_point_name != "":
-    model(next(iter(train_dataset))[0])
-    model.load_weights('{}/checkpoint/{}/data.ckpt'.format(cf.load_path(), load_check_point_name))
-    model.load_optimizer_state(optimizer, '{}/checkpoint/{}'.format(cf.load_path(), load_check_point_name), 'optimizer', model.trainable_variables)
-    saved_epoch = int(load_check_point_name.split('_')[-1])
-else:
-    cf.clear_plot_file('{}/{}'.format(cf.load_path(), config['plot_file']))
-    saved_epoch = 0
-
 # train function
 @tf.function
 def train_step(x, y):
@@ -120,7 +110,19 @@ def train_step(x, y):
     optimizer.apply_gradients(zip(gradients, model.trainable_variables))
     train_loss(loss)
 
-
+# load model
+if load_check_point_name != "":
+    saved_epoch = int(load_check_point_name.split('_')[-1])
+    for x, y in train_dataset:
+        train_step(x, y)
+        break
+    model.load_weights('{}/checkpoint/{}/data.ckpt'.format(cf.load_path(), load_check_point_name))
+    model.load_optimizer_state(optimizer, '{}/checkpoint/{}'.format(cf.load_path(), load_check_point_name), 'optimizer')
+    train_loss.reset_states()
+else:
+    cf.clear_plot_file('{}/{}'.format(cf.load_path(), config['plot_file']))
+    saved_epoch = 0
+    s
 # train run
 for epoch in range(saved_epoch, saved_epoch+epochs):
     i = 0

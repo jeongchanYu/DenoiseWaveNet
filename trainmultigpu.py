@@ -98,21 +98,6 @@ with mirrored_strategy.scope():
     optimizer = tf.keras.optimizers.Adam(learning_rate=config['learning_rate'])
     train_loss = tf.keras.metrics.Mean(name='train_loss')
 
-    # load model
-    if load_check_point_name != "":
-        def temp(inputs):
-            x, y = inputs
-            model(x)
-            return 0
-        mirrored_strategy.experimental_run_v2(temp, args=(next(iter(dist_dataset)),))
-        model.load_weights('{}/checkpoint/{}/data.ckpt'.format(cf.load_path(), load_check_point_name))
-        model.load_optimizer_state(optimizer, '{}/checkpoint/{}'.format(cf.load_path(), load_check_point_name), 'optimizer', model.trainable_variables)
-        saved_epoch = int(load_check_point_name.split('_')[-1])
-    else:
-        cf.clear_plot_file('{}/{}'.format(cf.load_path(), config['plot_file']))
-        saved_epoch = 0
-
-
 # train function
 @tf.function
 def train_step(dist_inputs):
@@ -140,6 +125,19 @@ def train_step(dist_inputs):
 
 # train run
 with mirrored_strategy.scope():
+    # load model
+    if load_check_point_name != "":
+        saved_epoch = int(load_check_point_name.split('_')[-1])
+        for inputs in dist_dataset:
+            train_step(inputs)
+            break
+        model.load_weights('{}/checkpoint/{}/data.ckpt'.format(cf.load_path(), load_check_point_name))
+        model.load_optimizer_state(optimizer, '{}/checkpoint/{}'.format(cf.load_path(), load_check_point_name), 'optimizer')
+        train_loss.reset_states()
+    else:
+        cf.clear_plot_file('{}/{}'.format(cf.load_path(), config['plot_file']))
+        saved_epoch = 0
+
     for epoch in range(saved_epoch, saved_epoch+epochs):
         i = 0
         start = time.time()
