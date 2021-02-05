@@ -122,7 +122,7 @@ if load_check_point_name != "":
 else:
     cf.clear_plot_file('{}/{}'.format(cf.load_path(), config['plot_file']))
     saved_epoch = 0
-    s
+
 # train run
 for epoch in range(saved_epoch, saved_epoch+epochs):
     i = 0
@@ -133,8 +133,11 @@ for epoch in range(saved_epoch, saved_epoch+epochs):
         i += 1
     print(" | loss : {}".format(train_loss.result()), " | Processing time :", datetime.timedelta(seconds=time.time() - start))
 
-    cf.createFolder("{}/checkpoint/{}_{}".format(cf.load_path(), save_check_point_name, epoch+1))
-    model.save_weights('{}/checkpoint/{}_{}/data.ckpt'.format(cf.load_path(), save_check_point_name, epoch+1))
-    model.save_optimizer_state(optimizer, '{}/checkpoint/{}_{}'.format(cf.load_path(), save_check_point_name, epoch+1), 'optimizer')
+    if ((epoch + 1) % config['save_check_point_period'] == 0) or (epoch + 1 == 1):
+        cf.createFolder("{}/checkpoint/{}_{}".format(cf.load_path(), save_check_point_name, epoch+1))
+        model.save_weights('{}/checkpoint/{}_{}/data.ckpt'.format(cf.load_path(), save_check_point_name, epoch+1))
+        model.save_optimizer_state(optimizer, '{}/checkpoint/{}_{}'.format(cf.load_path(), save_check_point_name, epoch+1), 'optimizer')
+
+    # write plot file
     cf.write_plot_file('{}/{}'.format(cf.load_path(), config['plot_file']), epoch+1, train_loss.result())
     train_loss.reset_states()
