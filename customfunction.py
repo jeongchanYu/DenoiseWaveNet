@@ -2,6 +2,7 @@ import datetime
 import time
 import os
 
+
 def createFolder(directory):
     try:
         if not os.path.exists(directory):
@@ -9,11 +10,13 @@ def createFolder(directory):
     except OSError:
         print ('Issue: Creating directory. ' +  directory)
 
+
 def load_path():
     path = os.path.join(os.path.dirname(__file__))
     if path == "":
         path = "."
     return path
+
 
 def process_time(func):
     def wrapper():
@@ -22,14 +25,17 @@ def process_time(func):
         print("Processing time :", datetime.timedelta(seconds=time.time()-start))
     return wrapper
 
+
 # for WGP Server
 def write_plot_file(filename, index, value):
     with open(filename, 'a') as f:
         f.write("{{x:{}, y:{}}},".format(index, value))
 
+
 def clear_plot_file(filename):
     with open(filename, 'w') as f:
         pass
+
 
 def read_path_list(dirname, extention=""):
     try:
@@ -47,6 +53,7 @@ def read_path_list(dirname, extention=""):
         return return_list
     except PermissionError:
         pass
+
 
 def compare_path_list(dirname1, dirname2, extention=""):
     list1 = read_path_list(dirname1, extention)
