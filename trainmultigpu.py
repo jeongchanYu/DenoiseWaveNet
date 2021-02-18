@@ -9,6 +9,11 @@ import datetime
 import math
 import os
 
+# tf version check
+tf_version = tf.__version__.split('.')
+tf_version[0] = int(tf_version[0])
+tf_version[1] = int(tf_version[1])
+
 # prevent GPU overflow
 gpu_config = tf.compat.v1.ConfigProto()
 gpu_config.gpu_options.allow_growth = True
@@ -119,7 +124,10 @@ def train_step(dist_inputs):
         gradients = tape.gradient(loss, model.trainable_variables)
         optimizer.apply_gradients(zip(gradients, model.trainable_variables))
         return mae
-    per_example_losses = mirrored_strategy.experimental_run_v2(step_fn, args=(dist_inputs,))
+    if tf_version[1] > 2:
+        per_example_losses = mirrored_strategy.run(step_fn, args=(dist_inputs,))
+    else:
+        per_example_losses = mirrored_strategy.experimental_run_v2(step_fn, args=(dist_inputs,))
     mean_loss = mirrored_strategy.reduce(tf.distribute.ReduceOp.SUM, per_example_losses, axis=0)
     train_loss(mean_loss/batch_size)
 

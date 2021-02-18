@@ -1,8 +1,8 @@
 {
-  "previous_size" : 2269,
-  "current_size"  : 1601,
-  "future_size"   : 2269,
-  "shift_size"    : 800,
+  "previous_size" : 2200,
+  "current_size"  : 1600,
+  "future_size"   : 2200,
+  "shift_size"    : 1600,
 
   "dilation"      : [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512],
   "batch_size"    : 20,
@@ -13,7 +13,7 @@
 
   "save_check_point_period" : "10",
   "load_check_point_name" : "",
-  "save_check_point_name" : "voice",
+  "save_check_point_name" : "metro",
 
   "training_source_path"  : "./dataset/metro/36min/noise20_book_36min.wav",
   "training_target_path"  : "./dataset/metro/36min/original_book_36min.wav",

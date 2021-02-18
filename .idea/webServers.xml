@@ -16,6 +16,13 @@
           </advancedOptions>
         </fileTransfer>
       </webServer>
+      <webServer id="f4007862-8cc6-4897-b751-b82e81d805a0" name="LAB-server17">
+        <fileTransfer rootFolder="/home/csp-server17" accessType="SFTP" host="128.134.65.21" port="12354" sshConfigId="7457f6c6-da14-4bed-997f-6ebe46f70ff8" sshConfig="csp-server17@128.134.65.21:12354 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
     </option>
   </component>
 </project>
