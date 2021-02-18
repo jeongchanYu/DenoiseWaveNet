@@ -11,7 +11,7 @@
   "relu_alpha"    : 0.0,
   "default_float" : "float32",
 
-  "save_check_point_period" : "10",
+  "save_check_point_period" : 10,
   "load_check_point_name" : "",
   "save_check_point_name" : "metro",
 
